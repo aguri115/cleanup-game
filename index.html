@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>すっきり！お片付け</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#f7f3ec;color:#514a43;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;touch-action:none}
+.app{width:100%;height:100%;display:flex;flex-direction:column;padding:10px 10px 12px;gap:8px}
+.header{background:#fff;border-radius:16px;padding:9px 12px;box-shadow:0 2px 10px #0000000a;flex:0 0 auto}
+.title{font-size:19px;font-weight:800}.desc{font-size:11px;color:#817a72;margin-top:2px}
+.tasks{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.task{font-size:11px;padding:4px 7px;border-radius:999px;background:#f0ebe3}
+.task.done{background:#dfeadf;text-decoration:line-through;opacity:.6}
+.progress{font-size:11px;color:#777;margin-top:5px}
+#room{position:relative;flex:1;min-height:0;width:100%;border-radius:22px;overflow:hidden;border:4px solid #eee5d7;background:#d6c5a8}
+.wall{position:absolute;inset:0 0 46% 0;background:#eee7da}
+.floor{position:absolute;inset:54% 0 0 0;background:#d7c6a8}
+.window{position:absolute;left:7%;top:7%;width:26%;height:27%;background:#cfe3e7;border:8px solid white;border-radius:14px}
+.shelf{position:absolute;right:7%;top:10%;width:25%;height:30%;background:#b99670;border-radius:12px}
+.shelf:before{content:"";position:absolute;left:8%;right:8%;top:28%;height:5px;background:#806347;box-shadow:0 40px #806347}
+.target{position:absolute;border:2px dashed #9a876f;background:#ffffff35;border-radius:10px;font-size:9px;text-align:center;padding-top:8px;color:#6d6154;z-index:2}
+.bookTarget{right:8%;top:17%;width:18%;height:10%}
+.shirtTarget{right:8%;top:29%;width:18%;height:10%}
+.boxTarget{left:7%;bottom:10%;width:25%;height:13%}
+.item{position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;user-select:none;touch-action:none}
+.trash{width:42px;height:42px;border-radius:12px;background:#c8b0a0}
+.book{width:50px;height:36px;border-radius:8px;background:#9eb7c2}
+.shirt{width:53px;height:42px;border-radius:11px;background:#d5a7a7}
+.box{width:76px;height:54px;border-radius:10px;background:#b9936e}
+.mug{width:40px;height:40px;border-radius:50%;background:#e4d4a9}
+.dirt{position:absolute;z-index:3;width:82px;height:52px;border-radius:50%;background:#a79580;opacity:.9;touch-action:none}
+#dirt1{left:12%;bottom:16%}#dirt2{right:13%;bottom:26%}
+.reveal{position:absolute;z-index:6;display:none;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#ead8a5;font-size:9px;font-weight:800}
+#reveal1{left:40%;bottom:17%}#reveal2{left:54%;top:58%}
+.toast{position:absolute;z-index:20;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:12px 16px;border-radius:16px;box-shadow:0 8px 30px #0002;font-weight:800;font-size:13px;display:none;white-space:nowrap}
+.clear{display:none;position:absolute;z-index:30;inset:0;background:#ffffffcc;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:900}
+.clear span{display:block;font-size:12px;font-weight:500;margin-top:5px}
+.tip{font-size:10px;color:#80786f;text-align:center;flex:0 0 auto}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title">🧹 すっきり！お片付け</div>
+    <div class="desc">この画面の中だけで、好きな順番に片付けよう。</div>
+    <div class="tasks" id="tasks">
+      <div class="task" id="t1">□ ゴミ</div><div class="task" id="t2">□ 本</div>
+      <div class="task" id="t3">□ 服</div><div class="task" id="t4">□ 箱</div>
+      <div class="task" id="t5">□ 床</div><div class="task" id="t6">□ テーブル</div>
+    </div>
+    <div class="progress" id="progress">0 / 6 完了</div>
+  </div>
+
+  <div id="room">
+    <div class="wall"></div><div class="floor"></div><div class="window"></div><div class="shelf"></div>
+    <div class="target bookTarget">本棚</div><div class="target shirtTarget">収納</div><div class="target boxTarget">箱置き場</div>
+
+    <div class="item trash" id="trash" style="left:12%;top:47%">ゴミ</div>
+    <div class="item book" id="book" style="left:40%;top:49%">本</div>
+    <div class="item shirt" id="shirt" style="left:64%;top:67%">服</div>
+    <div class="item box" id="box" style="left:9%;top:70%">ダンボール</div>
+    <div class="item mug" id="mug" style="left:58%;top:47%">コップ</div>
+
+    <div class="dirt" id="dirt1"></div><div class="dirt" id="dirt2"></div>
+    <div class="reveal" id="reveal1">小物</div><div class="reveal" id="reveal2">小物</div>
+    <div class="toast" id="toast"></div>
+    <div class="clear" id="clear">✨ すべて完了！<span>次の場所へ</span></div>
+  </div>
+  <div class="tip">タップ：拾う・開ける　／　ドラッグ：運ぶ　／　なぞる：掃除</div>
+</div>
+
+<script>
+const done=new Set(), $=id=>document.getElementById(id);
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').style.display='none',650)}
+function finish(id,msg){
+ if(done.has(id))return; done.add(id); $('t'+id.slice(1)).classList.add('done');
+ $('progress').textContent=`${done.size} / 6 完了`; toast(msg);
+ if(done.size===6)$('clear').style.display='flex';
+}
+function drag(el,target,id,msg){
+ let ox=0,oy=0,on=false;
+ el.addEventListener('pointerdown',e=>{on=true;el.setPointerCapture(e.pointerId);const r=el.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;e.preventDefault()});
+ el.addEventListener('pointermove',e=>{if(!on)return;const rr=$('room').getBoundingClientRect();el.style.left=(e.clientX-rr.left-ox)+'px';el.style.top=(e.clientY-rr.top-oy)+'px';e.preventDefault()});
+ el.addEventListener('pointerup',e=>{if(!on)return;on=false;const a=el.getBoundingClientRect(),b=target.getBoundingClientRect();if(a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top){el.style.left=(target.offsetLeft+target.offsetWidth/2-el.offsetWidth/2)+'px';el.style.top=(target.offsetTop+target.offsetHeight/2-el.offsetHeight/2)+'px';el.style.opacity=.2;el.style.pointerEvents='none';finish(id,msg)}});
+}
+drag($('book'),document.querySelector('.bookTarget'),'t2','本がスッと収まった！');
+drag($('shirt'),document.querySelector('.shirtTarget'),'t3','服を片付けた！');
+drag($('box'),document.querySelector('.boxTarget'),'t4','箱を片付けた！');
+
+$('trash').addEventListener('pointerdown',()=>{$('trash').style.display='none';finish('t1','ゴミを片付けた！')});
+$('box').addEventListener('dblclick',()=>{});
+$('mug').addEventListener('pointerdown',()=>{});
+
+function dirt(el,id,msg,reveal){
+ let p=0,on=false,lx=0,ly=0;
+ el.addEventListener('pointerdown',e=>{on=true;lx=e.clientX;ly=e.clientY;e.preventDefault()});
+ el.addEventListener('pointermove',e=>{if(!on)return;const d=Math.hypot(e.clientX-lx,e.clientY-ly);if(d>5){p+=d;lx=e.clientX;ly=e.clientY;const q=Math.min(1,p/150);el.style.opacity=String(.9-q*.8);el.style.transform=`scale(${1-q*.25})`;if(p>65&&p<110)el.style.background='#c4b8a7';if(p>=150){on=false;el.style.display='none';finish(id,msg);if(reveal)reveal.style.display='flex'}}e.preventDefault()},{passive:false});
+ window.addEventListener('pointerup',()=>on=false)
+}
+dirt($('dirt1'),'t5','床がピカピカ！',$('reveal1'));
+dirt($('dirt2'),'t6','テーブルが綺麗になった！',$('reveal2'));
+
+$('box').addEventListener('pointerdown',e=>{
+ if(e.detail===1){setTimeout(()=>{if($('box').style.pointerEvents!=='none' && $('box').style.display!=='none'){ $('reveal1').style.display='flex'; toast('箱を開けた！小物が出てきた') }},250)}
+});
+</script>
+</body>
+</html>
